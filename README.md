@@ -1,19 +1,6 @@
-# ICS2025 Programming Assignment
+# Computer System Design Programming Assignment
 
-This project is the programming assignment of the class ICS(Introduction to Computer System)
-in Department of Computer Science and Technology, Nanjing University.
+This project is the programming assignment of the Computer System Design course in Department of Computer Science and Technoology, Nankai University, which completely based on the ICS2025 programming assignment of Nanjing University. The original project is available at https://github.com/NJU-ProjectN/ics-pa.
 
 For the guide of this programming assignment,
 refer to https://nju-projectn.github.io/ics-pa-gitbook/ics2025/
-
-To initialize, run
-```bash
-bash init.sh subproject-name
-```
-See `init.sh` for more details.
-
-The following subprojects/components are included. Some of them are not fully implemented.
-* [NEMU](https://github.com/NJU-ProjectN/nemu)
-* [Abstract-Machine](https://github.com/NJU-ProjectN/abstract-machine)
-* [Nanos-lite](https://github.com/NJU-ProjectN/nanos-lite)
-* [Navy-apps](https://github.com/NJU-ProjectN/navy-apps)

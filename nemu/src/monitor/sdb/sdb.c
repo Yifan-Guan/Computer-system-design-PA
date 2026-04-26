@@ -23,6 +23,7 @@ static int is_batch_mode = false;
 
 void init_regex();
 void init_wp_pool();
+void wp_display();
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -58,6 +59,21 @@ static int cmd_si(char *args) {
   return 0;
 }
 
+static int cmd_info(char *args) {
+  if (args == NULL) { return 0; }
+
+  if (strcmp(args, "r") == 0) {
+    isa_reg_display();
+  }
+  else if (strcmp(args, "w") == 0) {
+    wp_display();
+  }
+  else {
+    printf("Unknown info command '%s'\n", args);
+  }
+  return 0;
+}
+
 
 static int cmd_q(char *args) {
   nemu_state.state = NEMU_QUIT;
@@ -75,6 +91,7 @@ static struct {
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
   { "si", "Step into instruction", cmd_si },
+  { "info", "Display registers by 'r' or watchpoints by 'w'", cmd_info },
 
   /* TODO: Add more commands */
 

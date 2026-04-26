@@ -41,3 +41,11 @@ void init_wp_pool() {
 
 /* TODO: Implement the functionality of watchpoint */
 
+void wp_display() {
+  WP *p = head;
+  while (p) {
+    printf("watchpoint NO: %d\n", p->NO);
+    p = p->next;
+  }
+}
+

@@ -43,8 +43,7 @@ void init_wp_pool() {
 
 void wp_display() {
   WP *p = head;
-  printf("watchpoint");
-  while (p) {
+  while (p && p != free_) {
     printf("watchpoint NO: %d\n", p->NO);
     p = p->next;
   }

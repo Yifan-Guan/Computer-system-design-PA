@@ -25,6 +25,8 @@ void init_regex();
 void init_wp_pool();
 void wp_display();
 
+vaddr_t vaddr_read(vaddr_t addr, int len);
+
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
   static char *line_read = NULL;
@@ -76,6 +78,29 @@ static int cmd_info(char *args) {
   return 0;
 }
 
+static int cmd_x(char *args) {
+  if (args == NULL) { return 0; }
+
+  char *arg1 = strtok(args, " ");
+  char *arg2 = strtok(NULL, "");
+
+  if (arg1 == NULL || arg2 == NULL) {
+    printf("Usage: x N EXPR\n");
+    return 0;
+  }
+
+  int n = atoi(arg1);
+  // vaddr_t addr = expr(arg2);
+  vaddr_t addr = atoi(arg2);
+
+  for (int i = 0; i < n; i++) {
+    if (i % 4 == 0) {
+      printf("\n 0x%08x: \t", addr + i);
+    }
+    printf("%08x \t", vaddr_read(addr + i, 4));
+  }
+  return 0;
+}
 
 static int cmd_q(char *args) {
   nemu_state.state = NEMU_QUIT;
@@ -94,6 +119,7 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
   { "si", "Step into instruction", cmd_si },
   { "info", "Display registers by 'r' or watchpoints by 'w'", cmd_info },
+  { "x", "Scan memory", cmd_x },
 
   /* TODO: Add more commands */
 

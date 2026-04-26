@@ -91,7 +91,7 @@ static int cmd_x(char *args) {
 
   int n = atoi(arg1);
   // vaddr_t addr = expr(arg2);
-  vaddr_t addr = atoi(arg2);
+  vaddr_t addr = strtol(arg2, NULL, 0);
 
   for (int i = 0; i < n; i++) {
     if (i % 4 == 0) {

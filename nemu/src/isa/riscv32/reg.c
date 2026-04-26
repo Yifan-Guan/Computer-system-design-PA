@@ -27,16 +27,17 @@ static int reg_num = 32;
 
 void isa_reg_display() {
   int i;
-  bool* success = NULL;
+  bool* success = malloc(sizeof(bool));
   for (i = 0; i < reg_num; i ++) {
     word_t val = isa_reg_str2val(regs[i], success);
-    if (success) {
+    if (*success) {
       printf("%s: 0x%08x\n", regs[i], val);
     }
     else {
       printf("%s: 0x????????\n", regs[i]);
     }
   }
+  free(success);
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {

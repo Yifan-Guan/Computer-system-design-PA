@@ -14,6 +14,7 @@
 ***************************************************************************************/
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -31,8 +32,59 @@ static char *code_format =
 "  return 0; "
 "}";
 
-static void gen_rand_expr() {
-  buf[0] = '\0';
+static int buf_pos = 0;
+
+static void gen(char* str) {
+  strcpy(buf + buf_pos, str);
+  buf_pos += strlen(str);
+}
+
+static void gen_num(bool not_zero) {
+  char str[10];
+  do {
+    sprintf(str, "%u", rand() % 100);
+  } while (not_zero && strcmp(str, "0") == 0);
+  gen(str);
+}
+
+static void gen_rand_op() {
+  switch (rand() % 3) {
+    case 0: gen("+"); break;
+    case 1: gen("-"); break;
+    case 2: gen("*"); break;
+  }
+}
+
+static void gen_rand_expr(int depth) {
+  if (depth > 6) {
+    gen_num(false);
+    return;
+  }
+
+  switch (rand() % 4) {
+    case 0: {
+      gen_num(false); 
+      break;
+    }
+    case 1: {
+      gen_rand_expr(depth + 1);
+      gen_rand_op();
+      gen_rand_expr(depth + 1);
+      break;
+    }
+    case 2: {
+      gen_rand_expr(depth + 1);
+      gen("/");
+      gen_num(true);
+      break;
+    }
+    case 3: {
+      gen("(");
+      gen_rand_expr(depth + 1);
+      gen(")");
+      break;
+    }
+  }
 }
 
 int main(int argc, char *argv[]) {
@@ -44,7 +96,8 @@ int main(int argc, char *argv[]) {
   }
   int i;
   for (i = 0; i < loop; i ++) {
-    gen_rand_expr();
+    buf_pos = 0;
+    gen_rand_expr(0);
 
     sprintf(code_buf, code_format, buf);
 

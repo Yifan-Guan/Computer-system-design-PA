@@ -291,6 +291,8 @@ word_t eval(int p, int q, bool *success) {
 }
 
 word_t expr(char *e, bool *success) {
+  *success = true;
+
   if (!make_token(e)) {
     *success = false;
     return 0;
@@ -320,7 +322,7 @@ void test_expr() {
     printf("%s\t", expr_str);
     printf("%s\t", result_str);
 
-    bool success;
+    bool success = true;
     word_t result = expr(expr_str, &success);
     if (success) {
       printf("result: %d\t", result);

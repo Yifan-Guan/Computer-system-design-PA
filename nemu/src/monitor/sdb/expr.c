@@ -271,7 +271,7 @@ word_t eval(int p, int q, bool *success) {
       return -val;
     } 
 
-    printf("main operator: main_op = %d, type = %d\n", main_op, tokens[main_op].type);
+    printf("main operator: main_op = %d, type = %c\n", main_op, tokens[main_op].type);
     printf("subexpression 1: p = %d, q = %d\n", p, main_op - 1);
     word_t val1 = eval(p, main_op - 1, success);
     if (*success == false) {

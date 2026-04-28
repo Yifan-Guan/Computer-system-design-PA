@@ -19,6 +19,7 @@
  * Type 'man regex' for more information about POSIX regex functions.
  */
 #include <regex.h>
+#include <memory/vaddr.h>
 
 enum {
   TK_NOTYPE = 256, TK_EQ,
@@ -237,6 +238,19 @@ sword_t eval(int p, int q, bool *success) {
     /* Single token. Just return the value of it. */
     if (tokens[p].type == TK_NUM) {
       return atoi(tokens[p].str);
+    } else if (tokens[p].type == TK_HEX_NUM) {
+      return strtol(tokens[p].str, NULL, 16);
+    } else if (tokens[p].type == TK_REG) {
+      bool reg_success = false;
+      word_t reg_val = isa_reg_str2val(tokens[p].str, &reg_success);
+      if (reg_success) {
+        return reg_val;
+      }
+      else {
+        *success = false;
+        Assert(0, "Invalid register: %s", tokens[p].str);
+        return 0;
+      }
     }
     else {
       *success = false;
@@ -298,6 +312,14 @@ sword_t eval(int p, int q, bool *success) {
       case TK_NEG: {
         return -val2;
       }
+      case TK_DEREF: {
+        if (val2 == 0) {
+          *success = false;
+          Assert(0, "Dereference null pointer");
+          return 0;
+        }
+        return vaddr_read(val2, 4);
+      }
       default: break;
     }
 
@@ -320,6 +342,8 @@ sword_t eval(int p, int q, bool *success) {
         return val1 / val2;
       }
       case TK_EQ: return val1 == val2;
+      case TK_AND: return val1 && val2;
+      case TK_OR: return val1 || val2;
       default: assert(0);
     }
   }

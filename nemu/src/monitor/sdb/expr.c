@@ -201,6 +201,7 @@ bool check_parentheses(int p, int q, bool* need_split) {
 
 word_t eval(int p, int q, bool *success) {
   bool need_split = false;
+  printf("eval: p = %d, q = %d\n", p, q);
   if (p > q) {
     /* Bad expression */
     *success = false;

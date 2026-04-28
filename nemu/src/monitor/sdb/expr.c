@@ -237,7 +237,7 @@ word_t eval(int p, int q, bool *success) {
         parentheses_cnt--;
       }
       else if (parentheses_cnt == 0) {
-        int precedence = -1;
+        int precedence = 0x7fffffff;
         switch (tokens[i].type) {
           case TK_EQ: precedence = 0; break;
           case '+':

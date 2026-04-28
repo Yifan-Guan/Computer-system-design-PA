@@ -220,7 +220,8 @@ word_t eval(int p, int q, bool *success) {
     }
   }
   else if (check_parentheses(p, q, &need_split) == true && !need_split) {
-    /* The expression is surrounded by a matched pair of parentheses. */
+    /* The expression is surrounded by a. matched pair of parentheses. */
+    printf("remove parentheses: p = %d, q = %d\n", p, q);
     return eval(p + 1, q - 1, success);
   }
   else {
@@ -261,6 +262,7 @@ word_t eval(int p, int q, bool *success) {
     }
 
     if (tokens[main_op].type == TK_NEG) {
+      printf("unary minus: main_op = %d\n", main_op);
       word_t val = eval(main_op + 1, q, success);
       if (*success == false) {
         Assert(0, "Failed to evaluate the operand of unary minus");
@@ -269,11 +271,13 @@ word_t eval(int p, int q, bool *success) {
       return -val;
     } 
 
+    printf("main operator: %d, subexpression 1: p = %d, q = %d\n", main_op, p, main_op - 1);
     word_t val1 = eval(p, main_op - 1, success);
     if (*success == false) {
       Assert(0, "Failed to evaluate the first operand");
       return 0;
     }
+    printf("main operator: %d, subexpression 2: p = %d, q = %d\n", main_op, main_op + 1, q);
     word_t val2 = eval(main_op + 1, q, success);
     if (*success == false) {
       Assert(0, "Failed to evaluate the second operand");

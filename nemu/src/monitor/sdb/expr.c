@@ -201,7 +201,6 @@ bool check_parentheses(int p, int q, bool* need_split) {
 
 word_t eval(int p, int q, bool *success) {
   bool need_split = false;
-  printf("eval: p = %d, q = %d\n", p, q);
   if (p > q) {
     /* Bad expression */
     *success = false;
@@ -221,7 +220,6 @@ word_t eval(int p, int q, bool *success) {
   }
   else if (check_parentheses(p, q, &need_split) == true && !need_split) {
     /* The expression is surrounded by a. matched pair of parentheses. */
-    printf("remove parentheses: p = %d, q = %d\n", p, q);
     return eval(p + 1, q - 1, success);
   }
   else {
@@ -248,7 +246,6 @@ word_t eval(int p, int q, bool *success) {
           default: break;
         }
         if (precedence <= main_op_precedence) {
-          printf("update main operator: i = %d, type = %c, precedence = %d\n", i, tokens[i].type, precedence);
           main_op_precedence = precedence;
           main_op = i;
         }
@@ -263,7 +260,6 @@ word_t eval(int p, int q, bool *success) {
     }
 
     if (tokens[main_op].type == TK_NEG) {
-      printf("unary minus: main_op = %d\n", main_op);
       word_t val = eval(main_op + 1, q, success);
       if (*success == false) {
         Assert(0, "Failed to evaluate the operand of unary minus");
@@ -272,14 +268,11 @@ word_t eval(int p, int q, bool *success) {
       return -val;
     } 
 
-    printf("main operator: main_op = %d, type = %c\n", main_op, tokens[main_op].type);
-    printf("subexpression 1: p = %d, q = %d\n", p, main_op - 1);
     word_t val1 = eval(p, main_op - 1, success);
     if (*success == false) {
       Assert(0, "Failed to evaluate the first operand");
       return 0;
     }
-    printf("subexpression 2: p = %d, q = %d\n", main_op + 1, q);
     word_t val2 = eval(main_op + 1, q, success);
     if (*success == false) {
       Assert(0, "Failed to evaluate the second operand");
@@ -314,7 +307,6 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  printf("token number: %d\n", nr_token);
   word_t result = eval(0, nr_token - 1, success);
 
   return result;

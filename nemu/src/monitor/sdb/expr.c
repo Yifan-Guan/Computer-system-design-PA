@@ -279,6 +279,8 @@ word_t eval(int p, int q, bool *success) {
       return 0;
     }
 
+    printf("main_op: %s, val1: %d, val2: %d\n", tokens[main_op].type == TK_EQ ? "==" : (char[]){tokens[main_op].type, '\0'}, val1, val2);
+
     switch (tokens[main_op].type) {
       case '+': return val1 + val2;
       case '-': return val1 - val2;

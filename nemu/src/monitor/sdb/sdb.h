@@ -18,6 +18,12 @@
 
 #include <common.h>
 
-word_t expr(char *e, bool *success);
+sword_t expr(char *e, bool *success);
+void init_regex();
+
+void insert_wp(char *expr);
+void delete_wp(int no);
+void init_wp_pool();
+void wp_display();
 
 #endif

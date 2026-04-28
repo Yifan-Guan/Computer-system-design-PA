@@ -21,10 +21,6 @@
 
 static int is_batch_mode = false;
 
-void init_regex();
-void init_wp_pool();
-void wp_display();
-
 vaddr_t vaddr_read(vaddr_t addr, int len);
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
@@ -109,6 +105,25 @@ static int cmd_q(char *args) {
   return -1;
 }
 
+static int cmd_watch(char *args) {
+  if (args == NULL) {
+    printf("Usage: watch EXPR\n");
+    return 0;
+  }
+  insert_wp(args);
+  return 0;
+}
+
+static int cmd_rm_watch(char *args) {
+  if (args == NULL) {
+    printf("Usage: delete WP_NO\n");
+    return 0;
+  }
+  int no = atoi(args);
+  delete_wp(no);
+  return 0;
+}
+
 static int cmd_help(char *args);
 
 static struct {
@@ -122,6 +137,8 @@ static struct {
   { "si", "Step into instruction", cmd_si },
   { "info", "Display registers by 'r' or watchpoints by 'w'", cmd_info },
   { "x", "Scan memory", cmd_x },
+  { "watch", "Set a watchpoint for an expression", cmd_watch },
+  { "d", "Delete a watchpoint by its number", cmd_rm_watch },
 
   /* TODO: Add more commands */
 

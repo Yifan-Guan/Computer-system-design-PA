@@ -248,6 +248,7 @@ word_t eval(int p, int q, bool *success) {
           default: break;
         }
         if (precedence <= main_op_precedence) {
+          printf("update main operator: i = %d, type = %c, precedence = %d\n", i, tokens[i].type, precedence);
           main_op_precedence = precedence;
           main_op = i;
         }

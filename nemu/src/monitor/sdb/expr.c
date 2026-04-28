@@ -204,6 +204,7 @@ word_t eval(int p, int q, bool *success) {
   if (p > q) {
     /* Bad expression */
     *success = false;
+    Assert(0, "Bad expression");
     return 0;
   }
   else if (p == q) {
@@ -213,6 +214,7 @@ word_t eval(int p, int q, bool *success) {
     }
     else {
       *success = false;
+      Assert(0, "Invalid token");
       return 0;
     }
   }
@@ -253,12 +255,14 @@ word_t eval(int p, int q, bool *success) {
     if (main_op == -1) {
       /* No operator found. This should not happen. */
       *success = false;
+      Assert(0, "No operator found");
       return 0;
     }
 
     if (tokens[main_op].type == TK_NEG) {
       word_t val = eval(main_op + 1, q, success);
       if (*success == false) {
+        Assert(0, "Failed to evaluate the operand of unary minus");
         return 0;
       }
       return -val;
@@ -266,10 +270,12 @@ word_t eval(int p, int q, bool *success) {
 
     word_t val1 = eval(p, main_op - 1, success);
     if (*success == false) {
+      Assert(0, "Failed to evaluate the first operand");
       return 0;
     }
     word_t val2 = eval(main_op + 1, q, success);
     if (*success == false) {
+      Assert(0, "Failed to evaluate the second operand");
       return 0;
     }
 
@@ -280,6 +286,7 @@ word_t eval(int p, int q, bool *success) {
       case '/': {
         if (val2 == 0) {
           *success = false;
+          Assert(0, "Division by zero");
           return 0;
         }
         return val1 / val2;
@@ -295,6 +302,7 @@ word_t expr(char *e, bool *success) {
 
   if (!make_token(e)) {
     *success = false;
+    Assert(0, "make_token failed");
     return 0;
   }
 

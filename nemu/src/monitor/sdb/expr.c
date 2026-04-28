@@ -23,7 +23,9 @@
 enum {
   TK_NOTYPE = 256, TK_EQ,
   TK_NUM, TK_PARE_L, TK_PARE_R,
-  TK_NEG,
+  TK_NEG, 
+  TK_HEX_NUM, TK_REG, TK_DEREF,
+  TK_AND, TK_OR,
 
   /* TODO: Add more token types */
 
@@ -46,7 +48,11 @@ static struct rule {
   {"\\(", TK_PARE_L},   // left parenthesis
   {"\\)", TK_PARE_R},   // right parenthesis
   {"[0-9]+", TK_NUM},   // decimal number
+  {"0x[0-9a-fA-F]+", TK_HEX_NUM}, // hexadecimal number
+  {"\\$[a-zA-Z]+[0-9]* | \\$0", TK_REG}, // register
   {"==", TK_EQ},        // equal
+  {"&&", TK_AND},       // logical and
+  {"\\|\\|", TK_OR},    // logical or
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -135,7 +141,17 @@ static bool make_token(char *e) {
             break;
           }
           case '*': {
-            tokens[nr_token].type = '*';
+            if (nr_token == 0 ||
+                tokens[nr_token - 1].type == TK_PARE_L ||
+                tokens[nr_token - 1].type == '+' ||
+                tokens[nr_token - 1].type == '-' ||
+                tokens[nr_token - 1].type == '*' ||
+                tokens[nr_token - 1].type == '/' ||
+                tokens[nr_token - 1].type == TK_EQ) {
+              tokens[nr_token].type = TK_DEREF;
+            } else {
+              tokens[nr_token].type = '*';
+            }
             nr_token ++;
             break;
           }
@@ -156,6 +172,16 @@ static bool make_token(char *e) {
           }
           case TK_EQ: {
             tokens[nr_token].type = TK_EQ;
+            nr_token ++;
+            break;
+          }
+          case TK_AND: {
+            tokens[nr_token].type = TK_AND;
+            nr_token ++;
+            break;
+          }
+          case TK_OR: {
+            tokens[nr_token].type = TK_OR;
             nr_token ++;
             break;
           }
@@ -225,7 +251,7 @@ sword_t eval(int p, int q, bool *success) {
   else {
     /* We should do more things here. */
     int main_op = -1;
-    int main_op_precedence = 0x7fffffff;
+    int main_op_precedence = -1;
     int parentheses_cnt = 0;
     for (int i = p; i <= q; i++) {
       if (tokens[i].type == TK_PARE_L) {
@@ -235,17 +261,20 @@ sword_t eval(int p, int q, bool *success) {
         parentheses_cnt--;
       }
       else if (parentheses_cnt == 0) {
-        int precedence = 0x7fffffff;
+        int precedence = -1;
         switch (tokens[i].type) {
-          case TK_EQ: precedence = 0; break;
-          case '+':
-          case '-': precedence = 1; break;
+          case TK_NEG: precedence = 1; break;
+          case TK_DEREF: precedence = 2; break;
           case '*':
-          case '/': precedence = 2; break;
-          case TK_NEG: precedence = 3; break;
+          case '/': precedence = 3; break;
+          case '+':
+          case '-': precedence = 4; break;
+          case TK_EQ: precedence = 7; break;
+          case TK_AND: precedence = 11; break;
+          case TK_OR: precedence = 12; break;
           default: break;
         }
-        if (precedence <= main_op_precedence) {
+        if (precedence >= main_op_precedence) {
           main_op_precedence = precedence;
           main_op = i;
         }
@@ -259,23 +288,22 @@ sword_t eval(int p, int q, bool *success) {
       return 0;
     }
 
-    if (tokens[main_op].type == TK_NEG) {
-      sword_t val = eval(main_op + 1, q, success);
-      if (*success == false) {
-        Assert(0, "Failed to evaluate the operand of unary minus");
-        return 0;
+    sword_t val2 = eval(main_op + 1, q, success);
+    if (*success == false) {
+      Assert(0, "Failed to evaluate the second operand");
+      return 0;
+    }
+
+    switch (tokens[main_op].type) {
+      case TK_NEG: {
+        return -val2;
       }
-      return -val;
-    } 
+      default: break;
+    }
 
     sword_t val1 = eval(p, main_op - 1, success);
     if (*success == false) {
       Assert(0, "Failed to evaluate the first operand");
-      return 0;
-    }
-    sword_t val2 = eval(main_op + 1, q, success);
-    if (*success == false) {
-      Assert(0, "Failed to evaluate the second operand");
       return 0;
     }
 

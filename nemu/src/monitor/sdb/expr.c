@@ -262,7 +262,7 @@ word_t eval(int p, int q, bool *success) {
     }
 
     if (tokens[main_op].type == TK_NEG) {
-      printf("unary minus: main_op = %d\n", main_op);
+      printf("unary minus: main_op = %d: %c\n", main_op, tokens[main_op].type);
       word_t val = eval(main_op + 1, q, success);
       if (*success == false) {
         Assert(0, "Failed to evaluate the operand of unary minus");

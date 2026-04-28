@@ -204,7 +204,7 @@ word_t eval(int p, int q, bool *success) {
   if (p > q) {
     /* Bad expression */
     *success = false;
-    Assert(0, "Bad expression");
+    Assert(0, "Bad expression, %d > %d", p, q);
     return 0;
   }
   else if (p == q) {

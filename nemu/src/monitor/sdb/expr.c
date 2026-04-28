@@ -199,7 +199,7 @@ bool check_parentheses(int p, int q, bool* need_split) {
   return cnt == 0;
 }
 
-word_t eval(int p, int q, bool *success) {
+sword_t eval(int p, int q, bool *success) {
   bool need_split = false;
   if (p > q) {
     /* Bad expression */
@@ -260,7 +260,7 @@ word_t eval(int p, int q, bool *success) {
     }
 
     if (tokens[main_op].type == TK_NEG) {
-      word_t val = eval(main_op + 1, q, success);
+      sword_t val = eval(main_op + 1, q, success);
       if (*success == false) {
         Assert(0, "Failed to evaluate the operand of unary minus");
         return 0;
@@ -268,12 +268,12 @@ word_t eval(int p, int q, bool *success) {
       return -val;
     } 
 
-    word_t val1 = eval(p, main_op - 1, success);
+    sword_t val1 = eval(p, main_op - 1, success);
     if (*success == false) {
       Assert(0, "Failed to evaluate the first operand");
       return 0;
     }
-    word_t val2 = eval(main_op + 1, q, success);
+    sword_t val2 = eval(main_op + 1, q, success);
     if (*success == false) {
       Assert(0, "Failed to evaluate the second operand");
       return 0;
@@ -299,7 +299,7 @@ word_t eval(int p, int q, bool *success) {
   }
 }
 
-word_t expr(char *e, bool *success) {
+sword_t expr(char *e, bool *success) {
   *success = true;
 
   if (!make_token(e)) {
@@ -309,7 +309,7 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  word_t result = eval(0, nr_token - 1, success);
+  sword_t result = eval(0, nr_token - 1, success);
 
   return result;
 }
@@ -333,7 +333,7 @@ void test_expr() {
     printf("%s\t", result_str);
 
     bool success = true;
-    word_t result = expr(expr_str, &success);
+    sword_t result = expr(expr_str, &success);
     if (success) {
       printf("result: %d\t", result);
       if (result == atoi(result_str)) {

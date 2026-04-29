@@ -57,7 +57,6 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
     for(a=s; *s && *s != '%'; s++);
 
     for(z=s; s[0] == '%' && s[1] == '%'; z++, s+=2);
-  assert(0);
     l = z - a;
     assert(l >= 0);
     len += l;
@@ -65,6 +64,7 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
       l = n - len - 1;
       out[n - 1] = '\0';
     }
+  assert(0); // pin
     strncpy(out, a, l);
     continue;
 

@@ -52,7 +52,7 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
   char* num_buf_end = num_buf + num_buf_size - 1;
 
   for(;;) {
-    if(!*s) break;
+    if(!*s || len >= n - 1) break;
 
     for(a=s; *s && *s != '%'; s++);
     s++;
@@ -75,7 +75,6 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
     len += l;
     if (len >= n) {
       l = n - len - 1;
-      out[n - 1] = '\0';
     }
     strncpy(out + len, a, l);
 

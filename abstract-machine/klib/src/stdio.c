@@ -43,7 +43,8 @@ int snprintf(char *out, size_t n, const char *fmt, ...) {
 }
 
 int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
-  char *a, *z, *s = (char*)fmt;
+  char *a, *z;
+  char *s = (char*)fmt;
   int l = 0, len = 0;
 
   const int num_buf_size = 14;
@@ -72,8 +73,7 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
       case 'd':
         int i = va_arg(ap, int);
         a = int_to_str(i, num_buf_end);
-        z = num_buf_end;
-        l = z - a;
+        l = num_buf_end - a + 1;
         break;
       case 's':
         a = va_arg(ap, char*);

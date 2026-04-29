@@ -47,7 +47,7 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
   char *s = (char*)fmt;
   int l = 0, len = 0;
 
-  const int num_buf_size = 14;
+  const int num_buf_size = 20;
   char num_buf[num_buf_size];
   char* num_buf_end = num_buf + num_buf_size - 1;
 

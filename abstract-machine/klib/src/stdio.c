@@ -55,6 +55,7 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
     if(!*s) break;
 
     for(a=s; *s && *s != '%'; s++);
+  assert(0);
 
     for(z=s; s[0] == '%' && s[1] == '%'; z++, s+=2);
     l = z - a;
@@ -68,7 +69,6 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
     continue;
 
     s++;
-  assert(0);
 
     switch (*s) {
       case 'd':

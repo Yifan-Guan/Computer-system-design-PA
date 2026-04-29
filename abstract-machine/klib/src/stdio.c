@@ -78,6 +78,8 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
       out[n - 1] = '\0';
     }
     strncpy(out, a, l);
+
+    s++;
   }
 
   return len;

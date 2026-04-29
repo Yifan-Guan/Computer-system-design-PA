@@ -68,8 +68,6 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
 
     switch (*s) {
       case 'd':
-        break;
-      case 't':
         int i = va_arg(ap, int);
         a = int_to_str(i, num_buf_end);
         l = strlen(a);

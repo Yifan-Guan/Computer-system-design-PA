@@ -33,12 +33,17 @@ static bool g_print_step = false;
 void device_update();
 void check_wp(); // Check watchpoint after executing each instruction.
 
+void ring_buf_add(word_t pc, uint32_t inst);
+void ring_buf_print();
+
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+
+  ring_buf_add(_this->pc, _this->isa.inst);
 
 #ifdef CONFIG_WATCHPOINT
   check_wp();
@@ -98,6 +103,7 @@ static void statistic() {
 
 void assert_fail_msg() {
   isa_reg_display();
+  ring_buf_print();
   statistic();
 }
 

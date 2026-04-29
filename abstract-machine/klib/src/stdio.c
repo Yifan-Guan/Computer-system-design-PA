@@ -45,7 +45,7 @@ int snprintf(char *out, size_t n, const char *fmt, ...) {
 int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
   char *a;
   char *s = (char*)fmt;
-  int l = 0, len = 0;
+  int len = 0;
 
   const int num_buf_size = 20;
   char num_buf[num_buf_size];
@@ -55,6 +55,14 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
     if(!*s || len >= n - 1) break;
 
     for(a=s; *s && *s != '%'; s++);
+    int l = s - a;
+    if (l) {
+      if (len + l >= n) {
+        l = n - len - 1;
+      }
+      strncpy(out + len, a, l);
+      len += l;
+    }
     s++;
 
     switch (*s) {
@@ -72,11 +80,11 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
         assert(0);
     }
 
-    len += l;
-    if (len >= n) {
+    if (len + l >= n) {
       l = n - len - 1;
     }
     strncpy(out + len, a, l);
+    len += l;
 
     s++;
   }

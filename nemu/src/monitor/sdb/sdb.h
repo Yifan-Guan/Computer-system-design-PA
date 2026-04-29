@@ -28,4 +28,7 @@ void wp_display();
 
 void ring_buf_add(word_t pc, uint32_t inst);
 void ring_buf_print();
+
+void mtrace_add(word_t addr, int is_vaddr, int is_write);
+void mtrace_print();
 #endif

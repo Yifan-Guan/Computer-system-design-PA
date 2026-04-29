@@ -25,3 +25,34 @@ void ring_buf_print() {
         }
     }
 }
+
+#define MTRACE_BUF_SIZE 200
+
+typedef struct {
+    word_t addr;
+    int is_vaddr;
+    int is_write;
+} MTraceEntry;
+
+static MTraceEntry mtrace_buf[MTRACE_BUF_SIZE];
+static int mtrace_index = 0;
+
+void mtrace_add(word_t addr, int is_vaddr, int is_write) {
+    mtrace_buf[mtrace_index].addr = addr;
+    mtrace_buf[mtrace_index].is_vaddr = is_vaddr;
+    mtrace_buf[mtrace_index].is_write = is_write;
+    mtrace_index = (mtrace_index + 1) % MTRACE_BUF_SIZE;
+}
+
+void mtrace_print() {
+    printf("Memory Trace (last %d accesses):\n", MTRACE_BUF_SIZE);
+    printf("Address \t Type \t Access\n");
+    for (int i = 0; i < MTRACE_BUF_SIZE; i++) {
+        int idx = (mtrace_index + i + 1) % MTRACE_BUF_SIZE;
+        if (mtrace_buf[idx].addr != 0) { // Only print valid entries
+            printf("0x%08x \t %s \t %s\n", mtrace_buf[idx].addr,
+                   mtrace_buf[idx].is_vaddr ? "vaddr" : "paddr",
+                   mtrace_buf[idx].is_write ? "write" : "read");
+        }
+    }
+}

@@ -1,29 +1,18 @@
 #include <am.h>
 #include <nemu.h>
-#include <time.h>
-#include <sys/time.h>
-
-static struct timeval boot_time = {};
 
 void __am_timer_init() {
-  gettimeofday(&boot_time, NULL);
 }
 
 void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
-  struct timeval now;
-  gettimeofday(&now, NULL);
-  long seconds = now.tv_sec - boot_time.tv_sec;
-  long useconds = now.tv_usec - boot_time.tv_usec;
-  uptime->us = seconds * 1000000 + (useconds + 500);
+  uptime->us = (uint64_t)inl(RTC_ADDR + 4) << 32 | (uint32_t)inl(RTC_ADDR);
 }
 
 void __am_timer_rtc(AM_TIMER_RTC_T *rtc) {
-  time_t t = time(NULL);
-  struct tm *tm = localtime(&t);
-  rtc->second = tm->tm_sec;
-  rtc->minute = tm->tm_min;
-  rtc->hour   = tm->tm_hour;
-  rtc->day    = tm->tm_mday;
-  rtc->month  = tm->tm_mon + 1;
-  rtc->year   = tm->tm_year + 1900;
+  rtc->second = 0;
+  rtc->minute = 0;
+  rtc->hour   = 0;
+  rtc->day    = 0;
+  rtc->month  = 0;
+  rtc->year   = 1900;
 }

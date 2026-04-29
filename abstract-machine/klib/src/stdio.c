@@ -43,7 +43,7 @@ int snprintf(char *out, size_t n, const char *fmt, ...) {
 }
 
 int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
-  assert(0);
+  panic("Not implemented");
   char *a, *z;
   char *s = (char*)fmt;
   int l = 0, len = 0;

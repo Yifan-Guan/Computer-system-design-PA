@@ -67,9 +67,14 @@ static int cmd_info(char *args) {
   else if (strcmp(args, "w") == 0) {
     printf("watchpoints:\n");
     wp_display();
+  } else if (strcmp(args, "b") == 0) {
+    ring_buf_print();
   }
   else {
     printf("Unknown info command '%s'\n", args);
+    printf("Usage: info r - show registers\n");
+    printf("       info w - show watchpoints\n");
+    printf("       info b - show the instruction ring buffer\n");
   }
   return 0;
 }

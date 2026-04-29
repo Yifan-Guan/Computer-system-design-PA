@@ -26,4 +26,6 @@ void delete_wp(int no);
 void init_wp_pool();
 void wp_display();
 
+void ring_buf_add(word_t pc, uint32_t inst);
+void ring_buf_print();
 #endif

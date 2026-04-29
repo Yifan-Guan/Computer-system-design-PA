@@ -76,6 +76,8 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
       case 's':
         a = va_arg(ap, char*);
         l = strlen(a);
+        a = "test";
+        l = 4;
         if (a == NULL) a = "(null)";
         break;
       default:

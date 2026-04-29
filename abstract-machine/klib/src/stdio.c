@@ -77,10 +77,11 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
       l = n - len - 1;
       out[n - 1] = '\0';
     }
-    strncpy(out, a, l);
+    strncpy(out + len, a, l);
 
     s++;
   }
+  out[len] = '\0';
 
   return len;
 }

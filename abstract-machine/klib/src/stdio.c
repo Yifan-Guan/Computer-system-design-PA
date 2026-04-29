@@ -83,6 +83,7 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
       default:
         assert(0);
     }
+  assert(0);
 
     len += l;
     if (len >= n) {
@@ -90,7 +91,6 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
       out[n - 1] = '\0';
     }
     strncpy(out, a, l);
-  assert(0);
   }
 
   return len;

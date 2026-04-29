@@ -26,7 +26,7 @@ int printf(const char *fmt, ...) {
 }
 
 int vsprintf(char *out, const char *fmt, va_list ap) {
-  return vsnprintf(out, (size_t)-1, fmt, ap);
+  return vsnprintf(out, 0x7fffffff, fmt, ap);
 }
 
 int sprintf(char *out, const char *fmt, ...) {

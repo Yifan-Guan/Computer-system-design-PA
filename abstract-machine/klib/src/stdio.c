@@ -68,6 +68,7 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
     continue;
 
     s++;
+  assert(0);
 
     switch (*s) {
       case 'd':
@@ -83,7 +84,6 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
       default:
         assert(0);
     }
-  assert(0);
 
     len += l;
     if (len >= n) {

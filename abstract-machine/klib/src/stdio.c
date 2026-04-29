@@ -64,8 +64,8 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
       l = n - len - 1;
       out[n - 1] = '\0';
     }
-  assert(0); // pin
     strncpy(out, a, l);
+  assert(0); // pin
     continue;
 
     s++;

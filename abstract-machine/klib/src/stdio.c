@@ -47,9 +47,9 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
   char *s = (char*)fmt;
   int len = 0;
 
-  //const int num_buf_size = 20;
-  //char num_buf[num_buf_size];
-  //char* num_buf_end = num_buf + num_buf_size - 1;
+  // const int num_buf_size = 20;
+  // char num_buf[num_buf_size];
+  // char* num_buf_end = num_buf + num_buf_size - 1;
 
   for(;;) {
     if(!*s || len >= n - 1) break;
@@ -68,10 +68,10 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
     switch (*s) {
       case 'd':
         // int i = va_arg(ap, int);
-        //a = int_to_str(i, num_buf_end);
-        //l = num_buf_end - a;
-        a = "test";
-        l = 4;
+        // a = int_to_str(i, num_buf_end);
+        // l = num_buf_end - a;
+        a = "123";
+        l = 3;
         break;
       case 's':
         a = va_arg(ap, char*);

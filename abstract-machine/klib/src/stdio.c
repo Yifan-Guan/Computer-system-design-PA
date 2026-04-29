@@ -55,9 +55,9 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
     if(!*s) break;
 
     for(a=s; *s && *s != '%'; s++);
-  assert(0);
 
     for(z=s; s[0] == '%' && s[1] == '%'; z++, s+=2);
+  assert(0);
     l = z - a;
     assert(l >= 0);
     len += l;

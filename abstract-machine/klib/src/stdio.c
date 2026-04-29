@@ -92,7 +92,7 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
     strncpy(out, a, l);
   }
 
-  return 1;
+  return len;
 }
 
 #endif

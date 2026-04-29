@@ -43,7 +43,7 @@ int snprintf(char *out, size_t n, const char *fmt, ...) {
 }
 
 int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
-  char *a, *z;
+  char *a;
   char *s = (char*)fmt;
   int l = 0, len = 0;
 
@@ -55,19 +55,6 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
     if(!*s) break;
 
     for(a=s; *s && *s != '%'; s++);
-
-    l = 0;
-    for(z=s; s[0] == '%' && s[1] == '%'; z++, s+=2);
-    l = z - a;
-    assert(l >= 0);
-    len += l;
-    if (len >= n) {
-      l = n - len - 1;
-      out[n - 1] = '\0';
-    }
-    strncpy(out, a, l);
-    if (l) continue;
-
     s++;
 
     switch (*s) {

@@ -36,8 +36,6 @@
     } \
   } while (0)
 
-volatile static int dummy; // test
-
 #define panic(format, ...) Assert(0, format, ## __VA_ARGS__)
 
 #define TODO() panic("please implement me")

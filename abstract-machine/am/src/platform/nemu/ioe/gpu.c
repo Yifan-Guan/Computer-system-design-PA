@@ -21,6 +21,7 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
 }
 
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
+  int wi = 400;
   int w = ctl->w, h = ctl->h;
   int x = ctl->x, y = ctl->y;
   uint32_t *pi = (uint32_t *)(ctl->pixels);
@@ -29,7 +30,7 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 
   for (int i = 0; i < h; i++) {
     for (int j = 0; j < w; j++) {
-      fb[(y + i) * w + x + j] = pi[i * w + j];
+      fb[(y + i) * wi + x + j] = pi[i * w + j];
     }
   }
 

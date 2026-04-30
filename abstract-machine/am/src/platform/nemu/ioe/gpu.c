@@ -29,7 +29,7 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 
   for (int i = 0; i < h; i++) {
     for (int j = 0; j < w; j++) {
-      fb[(y + i) * h + x + j] = pi[i * w + j];
+      fb[(y + i) * w + x + j] = pi[i * w + j];
     }
   }
 

@@ -25,6 +25,23 @@ static inline int check_reg_idx(int idx) {
 
 #define gpr(idx) (cpu.gpr[check_reg_idx(idx)])
 
+#define SR_MTVEC   0x305
+#define SR_MEPC    0x341
+#define SR_MSTATUS 0x300
+#define SR_MCAUSE  0x342
+
+static inline int check_csr_idx(int idx) {
+  switch (idx) {
+    case SR_MTVEC: return 0;
+    case SR_MEPC: return 1;
+    case SR_MSTATUS: return 2;
+    case SR_MCAUSE: return 3;
+    default: assert(0); return -1;
+  }
+}
+
+#define csr(idx) (cpu.csr[check_csr_idx(idx)])
+
 static inline const char* reg_name(int idx) {
   extern const char* regs[];
   return regs[check_reg_idx(idx)];

@@ -12,7 +12,7 @@ int printf(const char *fmt, ...) {
   int ret;
   va_list ap;
   va_start(ap, fmt);
-  ret = vsprintf(buf, fmt, ap);
+  ret = vsnprintf(buf, sizeof(buf), fmt, ap);
   va_end(ap);
   for (char *p = buf; *p; p++) {
     putch(*p);

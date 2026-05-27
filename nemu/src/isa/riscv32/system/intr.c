@@ -22,6 +22,7 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
    */
 
   csr(SR_MCAUSE) = NO;
+  Log("mcause = %d", csr(SR_MCAUSE));
   csr(SR_MEPC) = epc;
 
   return csr(SR_MTVEC);

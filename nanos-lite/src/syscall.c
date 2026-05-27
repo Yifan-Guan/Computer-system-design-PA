@@ -11,6 +11,7 @@ void do_syscall(Context *c) {
     case SYS_exit: halt(a[1]); break;
     case SYS_yield: yield(); c->GPRx = 0; break;
     case SYS_write: 
+    Log("SYS_write: fd = %d, buf = %p, count = %d", a[1], (void *)a[2], a[3]);
       if (a[1] == 1 || a[1] == 2) {
         char *buf = (char *)a[2];
         size_t count = a[3];

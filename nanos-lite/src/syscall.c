@@ -6,7 +6,7 @@ uintptr_t program_break = (uintptr_t)&end;
 
 void do_syscall(Context *c) {
 
-  // printf("[SYSCALL] syscall ID = %d\n at %p", c->GPR1, (void *)c->mepc);
+  printf("[SYSCALL] syscall ID = %d\n at %p", c->GPR1, (void *)c->mepc);
 
   uintptr_t a[4];
   a[0] = c->GPR1;
@@ -30,7 +30,6 @@ void do_syscall(Context *c) {
       }
       break;
     case SYS_brk:
-    Log("SYS_brk: old program break = %p, new program break = %p", (void *)program_break, (void *)a[1]);
       if (a[1] == 0) {
         c->GPRx = program_break;
       } else {

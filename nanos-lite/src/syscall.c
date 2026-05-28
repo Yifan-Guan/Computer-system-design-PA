@@ -2,11 +2,11 @@
 #include "syscall.h"
 
 extern char end;
-uintptr_t program_break = (uintptr_t)&end;
+static uintptr_t program_break = (uintptr_t)&end;
 
 void do_syscall(Context *c) {
 
-  Log("[SYSCALL] syscall ID = %d\n at %p", c->GPR1, (void *)c->mepc);
+  // Log("[SYSCALL] syscall ID = %d\n at %p", c->GPR1, (void *)c->mepc);
 
   uintptr_t a[4];
   a[0] = c->GPR1;

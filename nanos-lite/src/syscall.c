@@ -1,6 +1,13 @@
 #include <common.h>
 #include "syscall.h"
+
+extern char end;
+uintptr_t program_break = (uintptr_t)&end;
+
 void do_syscall(Context *c) {
+
+  // printf("[SYSCALL] syscall ID = %d\n at %p", c->GPR1, (void *)c->mepc);
+
   uintptr_t a[4];
   a[0] = c->GPR1;
   a[1] = c->GPR2;
@@ -20,6 +27,19 @@ void do_syscall(Context *c) {
         c->GPRx = count;
       } else {
         c->GPRx = -1;
+      }
+      break;
+    case SYS_brk:
+    Log("SYS_brk: old program break = %p, new program break = %p", (void *)program_break, (void *)a[1]);
+      if (a[1] == 0) {
+        c->GPRx = program_break;
+      } else {
+        uintptr_t new_break = a[1];
+        if (new_break > program_break) {
+          memset((void *)program_break, 0, new_break - program_break);
+        }
+        program_break = new_break;
+        c->GPRx = 0;
       }
       break;
     default: panic("Unhandled syscall ID = %d", a[0]);

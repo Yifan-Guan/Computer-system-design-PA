@@ -110,27 +110,17 @@ size_t fs_write(int fd, const void *buf, size_t len) {
 size_t fs_lseek(int fd, size_t offset, int whence) {
   assert(fd >= 0 && fd < sizeof(file_table) / sizeof(Finfo));
   size_t f_size = file_table[fd].size;
-  size_t f_open_offset = file_table[fd].open_offset;
 
   switch (whence) {
     case SEEK_SET: 
-      if (offset < 0 || offset > f_size) {
-        panic("invalid offset = %d", offset);
-      }
       file_table[fd].open_offset = offset; 
       break;
 
     case SEEK_CUR: 
-      if (f_open_offset + offset < 0 || f_open_offset + offset > f_size) {
-        panic("invalid offset = %d", offset);
-      }
       file_table[fd].open_offset += offset; 
       break;
 
     case SEEK_END: 
-      if (offset > 0 || f_size + offset < 0) {
-        panic("invalid offset = %d", offset);
-      }
       file_table[fd].open_offset = f_size + offset; 
       break;
 

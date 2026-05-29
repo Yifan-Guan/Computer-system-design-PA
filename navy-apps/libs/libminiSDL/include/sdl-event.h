@@ -15,6 +15,7 @@
 enum SDL_Keys {
   SDLK_NONE = 0,
   _KEYS(enumdef)
+  KEY_NUM
 };
 
 enum SDL_EventType {
@@ -52,6 +53,8 @@ typedef union {
   SDL_KeyboardEvent key;
   SDL_UserEvent user;
 } SDL_Event;
+
+static uint8_t keystate[KEY_NUM] = {0};
 
 int SDL_PushEvent(SDL_Event *ev);
 int SDL_PollEvent(SDL_Event *ev);

@@ -1,3 +1,4 @@
+#include <string.h>
 #include <NDL.h>
 #include <SDL.h>
 
@@ -13,7 +14,25 @@ int SDL_PushEvent(SDL_Event *ev) {
 }
 
 int SDL_PollEvent(SDL_Event *ev) {
-  return 0;
+  char ndl_buf[64];
+  int succ;
+  succ = NDL_PollEvent(ndl_buf, sizeof(ndl_buf));
+  if (succ != 0) {
+    char keystr[64], keydown;
+    sscanf(ndl_buf, "k%c %s", &keydown, keystr);
+
+    ev->type = keydown=='d' ? SDL_KEYDOWN : SDL_KEYUP;
+
+    for (int i=0; i<KEY_NUM; i++) {
+      if (strcmp(keystr, keyname[i]) == 0) {
+        ev->key.keysym.sym = i;
+        keystate[i] = keydown=='d' ? 1 : 0;
+        break;
+      }
+    }
+  }
+  else { ev->key.keysym.sym = 0; }
+  return succ;
 }
 
 int SDL_WaitEvent(SDL_Event *event) {
@@ -26,10 +45,10 @@ int SDL_WaitEvent(SDL_Event *event) {
 
       event->type = keydown=='d' ? SDL_KEYDOWN : SDL_KEYUP;
 
-      for (int i=0; i<NUM_KEYS; i++) {
+      for (int i=0; i < KEY_NUM; i++) {
         if (strcmp(keystr, keyname[i]) == 0) {
           event->key.keysym.sym = i;
-          keystat[i] = keydown=='d' ? 1 : 0;
+          keystate[i] = keydown=='d' ? 1 : 0;
           break;
         }
       }
@@ -44,5 +63,19 @@ int SDL_PeepEvents(SDL_Event *ev, int numevents, int action, uint32_t mask) {
 }
 
 uint8_t* SDL_GetKeyState(int *numkeys) {
-  return NULL;
+  char ndl_buf[64];
+  int succ;
+  succ = NDL_PollEvent(ndl_buf, sizeof(ndl_buf));
+  if (succ != 0) {
+    char keystr[64], keydown;
+    sscanf(ndl_buf, "k%c %s", &keydown, keystr);
+    for (int i=0; i<KEY_NUM; i++) {
+      if (strcmp(keystr, keyname[i]) == 0) {
+        keystate[i] = keydown=='d' ? 1 : 0;
+        break;
+      }
+    }
+  }
+
+  return keystate;
 }

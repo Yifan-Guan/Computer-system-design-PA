@@ -43,6 +43,7 @@ void do_syscall(Context *c) {
       }
       break;
     case SYS_execve:
+      Log("SYS_execve: filename = %s, argv = %p, envp = %p", (char *)a[1], (void *)a[2], (void *)a[3]);
       naive_uload(NULL, (const char *)a[1]);
       break;
     case SYS_gettimeofday: 

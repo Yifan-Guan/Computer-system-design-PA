@@ -30,8 +30,6 @@ void NDL_OpenCanvas(int *w, int *h) {
   infobuf[sizeof(infobuf) - 1] = '\0';
   printf("Canvas info: %s\n", infobuf);
 
-  printf("Canvas info: screen_w = %d, screen_h = %d\n", screen_w, screen_h);
-
   if (*w>screen_w || *w==0) { *w = screen_w; }
   if (*h>screen_h || *h==0) { *h = screen_h; }
   canvas_w = *w; canvas_h = *h;

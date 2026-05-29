@@ -35,40 +35,28 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
-  // int w = io_read(AM_GPU_CONFIG).width;
-  // int h = io_read(AM_GPU_CONFIG).height;
-  // int x = offset % w, y = offset / w;
+  int w = io_read(AM_GPU_CONFIG).width;
+  int h = io_read(AM_GPU_CONFIG).height;
+  int x = offset % w, y = offset / w;
 
-  // if (!buf) { 
-  //   io_write(AM_GPU_FBDRAW, 0, 0, 0, w, h, true); 
-  // } else if (len == w * h) { 
-  //   io_write(AM_GPU_FBDRAW, 0, 0, (uint32_t*)buf, w, h, true); 
-  // } else if (len <= w - x) { 
-  //   io_write(AM_GPU_FBDRAW, x, y, (uint32_t*)buf, len, 1, true); 
-  // } else {
-  //   for (int i=0; i<len; i++) {
-  //     offset += i;
-  //     x = offset % w;
-  //     y = offset / w;
-  //     io_write(AM_GPU_FBDRAW, x, y, (uint32_t*)buf + i, 1, 1, false);
-  //   }
-  //   io_write(AM_GPU_FBDRAW, 0, 0, 0, 0, 0, true);
-  // }
+  if (!buf) { 
+    io_write(AM_GPU_FBDRAW, 0, 0, 0, w, h, true); 
+  } else if (len == w * h) { 
+    io_write(AM_GPU_FBDRAW, 0, 0, (uint32_t*)buf, w, h, true); 
+  } else if (len <= w - x) { 
+    io_write(AM_GPU_FBDRAW, x, y, (uint32_t*)buf, len, 1, true); 
+  } else {
+    io_write(AM_GPU_FBDRAW, x, y, (uint32_t*)buf, w - x, 1, true);
+    // for (int i=0; i<len; i++) {
+    //   offset += i;
+    //   x = offset % w;
+    //   y = offset / w;
+    //   io_write(AM_GPU_FBDRAW, x, y, (uint32_t*)buf + i, 1, 1, false);
+    // }
+    // io_write(AM_GPU_FBDRAW, 0, 0, 0, 0, 0, true);
+  }
 
-  // return len;
-
-    AM_GPU_CONFIG_T cfg = io_read(AM_GPU_CONFIG);
-    int x = (offset / 4) % cfg.width;               // 行内偏移
-    int y = (offset / 4) / cfg.width;               // 行号
-    
-    // 超出屏幕范围
-    if (len + offset > cfg.width * cfg.height * 4) 
-        len = cfg.width*cfg.height*4 - offset;
-
-    // amdev.h AM_DEVREG(11, GPU_FBDRAW,   WR, int x, y; void *pixels; int w, h; bool sync);
-    // 写入一行
-    io_write(AM_GPU_FBDRAW, x, y, (uint32_t*)buf, len / 4, 1, true);
-    return len;
+  return len;
 }
 
 void init_device() {

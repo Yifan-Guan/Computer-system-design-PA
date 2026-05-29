@@ -27,7 +27,7 @@ static void sh_handle_cmd(const char *cmd) {
   strcpy(filename, "/bin/");
   int len = strlen(cmd);
   strncpy(filename + 5, cmd, len);
-  filename[5 + len] = '\0';
+  filename[5 + len - 1] = '\0';
   execve(filename, NULL, NULL);
 }
 

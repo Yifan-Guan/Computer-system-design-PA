@@ -39,7 +39,7 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
   for (size_t i = 0; i < len; i++) {
     ((char *)buf)[i] = test_str[i];
   }
-  printf("dispinfo_read: %s", (char *)buf);
+  printf("dispinfo_read: %s\n", (char *)buf);
   return ret;
 }
 

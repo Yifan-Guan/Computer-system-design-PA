@@ -12,6 +12,8 @@ static int fbdev  = 5;
 static int screen_w = 0, screen_h = 0;
 static int canvas_w = 0, canvas_h = 0;
 
+static char infobuf[64];
+
 uint32_t NDL_GetTicks() {
   struct timeval tv;
   gettimeofday(&tv, NULL);
@@ -25,7 +27,6 @@ int NDL_PollEvent(char *buf, int len) {
 }
 
 void NDL_OpenCanvas(int *w, int *h) {
-  char infobuf[64];
   read(fbinfo, infobuf, sizeof(infobuf) - 1);
   printf("Canvas info: %s\n", infobuf);
 

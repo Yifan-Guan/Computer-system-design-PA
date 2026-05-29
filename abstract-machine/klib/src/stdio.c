@@ -86,6 +86,13 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
       str = va_arg(ap, char*);
       if (str == NULL) str = "(null)";
       l = strlen(str);
+    } else if (*p == '%') {
+      str = "%";
+      l = 1;
+    } else if (*p == 'p') {
+      uintptr_t val = (uintptr_t)va_arg(ap, void*);
+      str = int_to_str(val, num_buf + BUF_SIZE - 1);
+      l = strlen(str);
     } else {
       // unsupported, just print it literally
       if (len + 1 < n) out[len] = *p;

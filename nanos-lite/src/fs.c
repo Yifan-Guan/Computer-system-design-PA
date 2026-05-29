@@ -1,10 +1,7 @@
-#include <common.h>
 #include <fs.h>
 
 typedef size_t (*ReadFn) (void *buf, size_t offset, size_t len);
 typedef size_t (*WriteFn) (const void *buf, size_t offset, size_t len);
-
-size_t serial_write(const void *buf, size_t offset, size_t len);
 
 typedef struct {
   char *name;
@@ -19,6 +16,8 @@ enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_FB};
 
 size_t ramdisk_read(void *buf, size_t offset, size_t len);
 size_t ramdisk_write(const void *buf, size_t offset, size_t len);
+
+size_t serial_write(const void *buf, size_t offset, size_t len);
 
 
 size_t invalid_read(void *buf, size_t offset, size_t len) {
@@ -35,7 +34,7 @@ size_t invalid_write(const void *buf, size_t offset, size_t len) {
 static Finfo file_table[] __attribute__((used)) = {
   [FD_STDIN]  = {"stdin", 0, 0, 0, invalid_read, invalid_write},
   [FD_STDOUT] = {"stdout", 0, 0, 0, invalid_read, serial_write},
-  [FD_STDERR] = {"stderr", 0, 0, 0, invalid_read, invalid_write},
+  [FD_STDERR] = {"stderr", 0, 0, 0, invalid_read, serial_write},
 #include "files.h"
 };
 
@@ -60,34 +59,43 @@ int fs_open(const char *pathname, int flags, int mode) {
 
 size_t fs_read(int fd, void *buf, size_t len) {
   assert(fd >= 0 && fd < sizeof(file_table) / sizeof(Finfo));
-
-  size_t f_size = file_table[fd].size;
-  size_t f_open_offset = file_table[fd].open_offset;
-  size_t f_disk_offset = file_table[fd].disk_offset;
-  size_t f_remain = f_size - f_open_offset;
-  if (len > f_remain) {
-    len = f_remain;
+  switch (fd) {
+    case FD_STDIN: return 0;
+    case FD_STDOUT: case FD_STDERR: return 0;
+    default: 
+      size_t f_size = file_table[fd].size;
+      size_t f_open_offset = file_table[fd].open_offset;
+      size_t f_disk_offset = file_table[fd].disk_offset;
+      size_t f_remain = f_size - f_open_offset;
+      if (len > f_remain) {
+        len = f_remain;
+      }
+      size_t ret = file_table[fd].read(buf, f_disk_offset + f_open_offset, len);
+      file_table[fd].open_offset += ret;
+      return ret;
   }
-  size_t ret = file_table[fd].read(buf, f_disk_offset + f_open_offset, len);
-  file_table[fd].open_offset += ret;
-
-  return ret;
+  
 }
 
 size_t fs_write(int fd, const void *buf, size_t len) {
   assert(fd >= 0 && fd < sizeof(file_table) / sizeof(Finfo));
+  switch (fd) {
+    case FD_STDIN: return 0;
+    case FD_STDOUT: case FD_STDERR: 
+      return file_table[fd].write(buf, 0, len);
+    default: 
+      size_t f_size = file_table[fd].size;
+      size_t f_open_offset = file_table[fd].open_offset;
+      size_t f_disk_offset = file_table[fd].disk_offset;
+      size_t f_remain = f_size - f_open_offset;
 
-  size_t f_size = file_table[fd].size;
-  size_t f_open_offset = file_table[fd].open_offset;
-  size_t f_disk_offset = file_table[fd].disk_offset;
-  size_t f_remain = f_size - f_open_offset;
-  if (len > f_remain) {
-    len = f_remain;
+      if (len > f_remain) {
+        len = f_remain;
+      }
+      size_t ret = file_table[fd].write(buf, f_disk_offset + f_open_offset, len);
+      file_table[fd].open_offset += ret;
+      return ret;
   }
-  size_t ret = file_table[fd].write(buf, f_disk_offset + f_open_offset, len);
-  file_table[fd].open_offset += ret;
-
-  return ret;
 }
 
 size_t fs_lseek(int fd, size_t offset, int whence) {

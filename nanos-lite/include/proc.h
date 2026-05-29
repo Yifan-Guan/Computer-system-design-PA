@@ -19,7 +19,7 @@ typedef union {
 void context_kload(PCB* n_pcb, void (*entry)(void *), void *arg);
 void switch_boot_pcb();
 Context* schedule(Context *prev);
-
+size_t context_uload(PCB* n_pcb, const char* filename, char *const argv[], char *const envp[]);
 
 extern PCB *current;
 

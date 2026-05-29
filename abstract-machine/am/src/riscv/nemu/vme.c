@@ -1,6 +1,7 @@
 #include <am.h>
 #include <nemu.h>
 #include <klib.h>
+#include <riscv/riscv.h>
 
 static AddrSpace kas = {};
 static void* (*pgalloc_usr)(int) = NULL;
@@ -70,5 +71,12 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
 }
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
-  return NULL;
+  Context *cp = (Context*)((uintptr_t)(kstack.end) - sizeof(Context));
+
+  cp -> mepc = (uintptr_t)entry;
+  cp -> mstatus = 0x80;
+
+  cp -> pdir = as -> ptr;
+
+  return cp;
 }

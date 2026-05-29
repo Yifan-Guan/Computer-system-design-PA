@@ -31,16 +31,7 @@ size_t events_read(void *buf, size_t offset, size_t len) {
 size_t dispinfo_read(void *buf, size_t offset, size_t len) {
   AM_GPU_CONFIG_T gpuconfig = io_read(AM_GPU_CONFIG);
 
-  char test_str[64];
-  size_t ret = snprintf(test_str, sizeof(test_str), "WIDTH : %d\nHEIGHT : %d\n", gpuconfig.width, gpuconfig.height);
-  printf("dispinfo_read test: %s\n", test_str);
-
-  printf("before snprintf, buf = %s\n", (char *)buf);
-  for (size_t i = 0; i < len; i++) {
-    ((char *)buf)[i] = test_str[i];
-  }
-  printf("dispinfo_read: %s\n", (char *)buf);
-  return ret;
+  return snprintf(buf, len, "WIDTH : %d\nHEIGHT : %d\n", gpuconfig.width, gpuconfig.height);
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {

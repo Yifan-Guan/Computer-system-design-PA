@@ -14,6 +14,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Ehdr ehdr;
   Elf_Phdr phdr;
   size_t fd = fs_open(filename, 0, 0);
+  Log("Loading program '%s' from ramdisk, fd = %d", filename, fd);
 
   fs_read(fd, &ehdr, sizeof(Elf_Ehdr));
   assert(ehdr.e_ident[0] == 0x7f && ehdr.e_ident[1] == 'E' && ehdr.e_ident[2] == 'L' && ehdr.e_ident[3] == 'F');

@@ -1,10 +1,11 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <time.h>
+#include <sys/time.h>
 
 int main() {
   struct timeval start;
-  struct timezone current;
+  struct timeval current;
   gettimeofday(&start, NULL);
   printf("Start time: %d.%d seconds\n", start.tv_sec, start.tv_usec);
   while (1) {

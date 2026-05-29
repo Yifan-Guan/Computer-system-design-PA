@@ -12,7 +12,6 @@ int main() {
     gettimeofday(&current, NULL);
     if (current.tv_sec * 1000 + current.tv_usec - start.tv_sec * 1000 - start.tv_usec >= 500) {
       printf("Current time: %d.%d seconds\n", current.tv_sec, current.tv_usec);
-      break;
     }
   }
   return 0;

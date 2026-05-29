@@ -25,28 +25,30 @@ size_t events_read(void *buf, size_t offset, size_t len) {
   AM_INPUT_KEYBRD_T ev = io_read(AM_INPUT_KEYBRD);
   if (ev.keycode == AM_KEY_NONE) return 0;
 
-  const char *prefix = ev.keydown ? "kd " : "ku ";
-  const char *name = keyname[ev.keycode];
-  char *out = buf;
-  size_t written = 0;
+  return snprintf(buf, len, "%s%s\n", ev.keydown ? "kd " : "ku ", keyname[ev.keycode]);
 
-  for (const char *p = prefix; *p && written + 1 < len; p++) {
-    out[written++] = *p;
-  }
+  // const char *prefix = ev.keydown ? "kd " : "ku ";
+  // const char *name = keyname[ev.keycode];
+  // char *out = buf;
+  // size_t written = 0;
 
-  for (const char *p = name; *p && written + 1 < len; p++) {
-    out[written++] = *p;
-  }
+  // for (const char *p = prefix; *p && written + 1 < len; p++) {
+  //   out[written++] = *p;
+  // }
 
-  if (written + 1 < len) {
-    out[written++] = '\n';
-  }
+  // for (const char *p = name; *p && written + 1 < len; p++) {
+  //   out[written++] = *p;
+  // }
 
-  if (len > 0) {
-    out[written < len ? written : len - 1] = '\0';
-  }
+  // if (written + 1 < len) {
+  //   out[written++] = '\n';
+  // }
 
-  return written;
+  // if (len > 0) {
+  //   out[written < len ? written : len - 1] = '\0';
+  // }
+
+  // return written;
 }
 
 size_t dispinfo_read(void *buf, size_t offset, size_t len) {

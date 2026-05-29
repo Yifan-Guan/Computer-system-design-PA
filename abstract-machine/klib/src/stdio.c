@@ -34,7 +34,12 @@ int sprintf(char *out, const char *fmt, ...) {
 }
 
 int snprintf(char *out, size_t n, const char *fmt, ...) {
-  panic("Not implemented");
+  int ret;
+  va_list ap;
+  va_start(ap, fmt);
+  ret = vsnprintf(out, n, fmt, ap);
+  va_end(ap);
+  return ret;
 }
 
 static char* int_to_str(int num, char* buf_end) {

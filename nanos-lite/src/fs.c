@@ -14,6 +14,10 @@ typedef struct {
 
 enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_FB};
 
+size_t ramdisk_read(void *buf, size_t offset, size_t len);
+size_t ramdisk_write(const void *buf, size_t offset, size_t len);
+
+
 size_t invalid_read(void *buf, size_t offset, size_t len) {
   panic("should not reach here");
   return 0;
@@ -41,8 +45,8 @@ int fs_open(const char *pathname, int flags, int mode) {
     if (strcmp(pathname, file_table[i].name) == 0) {
       file_table[i].open_offset = 0;
       if (!file_table[i].read && !file_table[i].write) {
-        file_table[i].read = invalid_read;
-        file_table[i].write = invalid_write;
+        file_table[i].read = ramdisk_read;
+        file_table[i].write = ramdisk_write; 
       }
       return i;
     }

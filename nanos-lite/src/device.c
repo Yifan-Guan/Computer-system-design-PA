@@ -26,37 +26,35 @@ size_t events_read(void *buf, size_t offset, size_t len) {
   if (ev.keycode == AM_KEY_NONE) return 0;
 
   return snprintf(buf, len, "%s%s\n", ev.keydown ? "kd " : "ku ", keyname[ev.keycode]);
-
-  // const char *prefix = ev.keydown ? "kd " : "ku ";
-  // const char *name = keyname[ev.keycode];
-  // char *out = buf;
-  // size_t written = 0;
-
-  // for (const char *p = prefix; *p && written + 1 < len; p++) {
-  //   out[written++] = *p;
-  // }
-
-  // for (const char *p = name; *p && written + 1 < len; p++) {
-  //   out[written++] = *p;
-  // }
-
-  // if (written + 1 < len) {
-  //   out[written++] = '\n';
-  // }
-
-  // if (len > 0) {
-  //   out[written < len ? written : len - 1] = '\0';
-  // }
-
-  // return written;
 }
 
 size_t dispinfo_read(void *buf, size_t offset, size_t len) {
-  return 0;
+  AM_GPU_CONFIG_T gpuconfig = io_read(AM_GPU_CONFIG);
+
+  return snprintf(buf, len, "WIDTH : %d\nHEIGHT : %d\n", gpuconfig.width, gpuconfig.height);
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
-  return 0;
+  int w = io_read(AM_GPU_CONFIG).width;
+  int h = io_read(AM_GPU_CONFIG).height;
+  int x = offset % w, y = offset / w;
+
+  if (!buf) { 
+    io_write(AM_GPU_FBDRAW, 0, 0, 0, w, h, true); 
+  } else if (len == w * h) { io_write(AM_GPU_FBDRAW, 0, 0, (uint32_t*)buf, w, h, true); }
+  else if (len <= w-x) { io_write(AM_GPU_FBDRAW, x, y, (uint32_t*)buf, len, 1, true); }
+
+  else {
+    for (int i=0; i<len; i++) {
+      offset += i;
+      x = offset%w;
+      y = offset/w;
+      io_write(AM_GPU_FBDRAW, x, y, (uint32_t*)buf+i, 1, 1, false);
+    }
+    io_write(AM_GPU_FBDRAW, 0, 0, 0, 0, 0, true);
+  }
+
+  return len;
 }
 
 void init_device() {

@@ -1,4 +1,5 @@
 #include <common.h>
+#include <fs.h>
 #include "syscall.h"
 
 extern char end;
@@ -17,18 +18,23 @@ void do_syscall(Context *c) {
   switch (a[0]) {
     case SYS_exit: halt(a[1]); break;
     case SYS_yield: yield(); c->GPRx = 0; break;
-    case SYS_write: 
-      if (a[1] == 1 || a[1] == 2) {
-        char *buf = (char *)a[2];
-        size_t count = a[3];
-        for (size_t i = 0; i < count; i++) {
-          putch(buf[i]);
-        }
-        c->GPRx = count;
-      } else {
-        c->GPRx = -1;
-      }
-      break;
+    case SYS_open: c->GPRx = fs_open((const char *)a[1], a[2], a[3]); break;
+    case SYS_read: c->GPRx = fs_read(a[1], (void *)a[2], a[3]); break;
+    case SYS_write: c->GPRx = fs_write(a[1], (const void *)a[2], a[3]); break;
+    case SYS_close: c->GPRx = fs_close(a[1]); break;
+    case SYS_lseek: c->GPRx = fs_lseek(a[1], a[2], a[3]); break;
+    // case SYS_write: 
+    //   if (a[1] == 1 || a[1] == 2) {
+    //     char *buf = (char *)a[2];
+    //     size_t count = a[3];
+    //     for (size_t i = 0; i < count; i++) {
+    //       putch(buf[i]);
+    //     }
+    //     c->GPRx = count;
+    //   } else {
+    //     c->GPRx = -1;
+    //   }
+    //   break;
     case SYS_brk:
       if (a[1] == 0) {
         c->GPRx = program_break;

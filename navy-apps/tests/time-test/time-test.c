@@ -1,8 +1,5 @@
-#include <unistd.h>
 #include <stdio.h>
-#include <time.h>
-#include <sys/time.h>
-#include "../libs/libndl/include/NDL.h"
+#include <NDL.h>
 
 int main() {
   NDL_Init(0);

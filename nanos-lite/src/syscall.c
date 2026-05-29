@@ -38,8 +38,8 @@ void do_syscall(Context *c) {
       break;
     case SYS_gettimeofday: 
       uint32_t tick = io_read(AM_TIMER_UPTIME).us;
-      ((struct timeval *)a[1])->tv_sec = tick / 1000;
-      ((struct timeval *)a[1])->tv_usec = tick % 1000;
+      ((struct timeval *)a[1])->tv_sec = tick / 1000000;
+      ((struct timeval *)a[1])->tv_usec = tick % 1000000;
       c->GPRx = 0;
       break;
     default: panic("Unhandled syscall ID = %d", a[0]);

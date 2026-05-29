@@ -23,7 +23,12 @@ static void sh_prompt() {
 }
 
 static void sh_handle_cmd(const char *cmd) {
-  execve("/bin/menu", NULL, NULL);
+  printf("Executing command: %s\n", cmd);
+  char filename[256];
+  strcpy(filename, "/bin/");
+  strcat(filename, cmd);
+  printf("Executing file: %s\n", filename);
+  execve(filename, NULL, NULL);
 }
 
 void builtin_sh_run() {

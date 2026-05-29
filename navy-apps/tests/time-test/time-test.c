@@ -10,7 +10,7 @@ int main() {
   printf("Start\n");
   while (1) {
     gettimeofday(&current, NULL);
-    if (current.tv_sec * 1000 + current.tv_usec - start.tv_sec * 1000 - start.tv_usec >= 500) {
+    if (current.tv_sec * 1000 + current.tv_usec - start.tv_sec * 1000 - start.tv_usec >= 1000) {
       printf("Tick\n");
       start.tv_sec = current.tv_sec;
       start.tv_usec = current.tv_usec;

@@ -54,6 +54,27 @@ static char* int_to_str(int num, char* buf_end) {
   return p + 1;
 }
 
+static char* ptr_to_str(uintptr_t ptr, char* buf_end) {
+  char *p = buf_end;
+
+  *p-- = '\0';
+
+  do {
+    int digit = ptr % 16;
+    if (digit < 10) {
+      *p-- = '0' + digit;
+    } else {
+      *p-- = 'a' + (digit - 10);
+    }
+    ptr /= 16;
+  } while (ptr > 0);
+
+  *p-- = 'x';
+  *p-- = '0';
+
+  return p + 1;
+}
+
 int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
   size_t len = 0;   // number of chars actually written
   size_t total = 0; // total chars that would be written
@@ -91,7 +112,7 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
       l = 1;
     } else if (*p == 'p') {
       uintptr_t val = (uintptr_t)va_arg(ap, void*);
-      str = int_to_str(val, num_buf + BUF_SIZE - 1);
+      str = ptr_to_str(val, num_buf + BUF_SIZE - 1);
       l = strlen(str);
     } else {
       // unsupported, just print it literally

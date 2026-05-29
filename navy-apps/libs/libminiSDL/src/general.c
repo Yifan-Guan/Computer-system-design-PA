@@ -1,6 +1,8 @@
 #include <NDL.h>
+#include <sdl-timer.h>
 
 int SDL_Init(uint32_t flags) {
+  initial_ticks = NDL_GetTicks();
   return NDL_Init(flags);
 }
 

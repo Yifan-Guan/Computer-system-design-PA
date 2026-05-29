@@ -46,14 +46,13 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
   } else if (len <= w - x) { 
     io_write(AM_GPU_FBDRAW, x, y, (uint32_t*)buf, len, 1, true); 
   } else {
-    io_write(AM_GPU_FBDRAW, x, y, (uint32_t*)buf, w - x, 1, true);
-    // for (int i=0; i<len; i++) {
-    //   offset += i;
-    //   x = offset % w;
-    //   y = offset / w;
-    //   io_write(AM_GPU_FBDRAW, x, y, (uint32_t*)buf + i, 1, 1, false);
-    // }
-    // io_write(AM_GPU_FBDRAW, 0, 0, 0, 0, 0, true);
+    for (int i=0; i<len; i++) {
+      offset += i;
+      x = offset % w;
+      y = offset / w;
+      io_write(AM_GPU_FBDRAW, x, y, (uint32_t*)buf + i, 1, 1, false);
+    }
+    io_write(AM_GPU_FBDRAW, 0, 0, 0, 0, 0, true);
   }
 
   return len;

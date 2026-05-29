@@ -27,7 +27,6 @@ int NDL_PollEvent(char *buf, int len) {
 void NDL_OpenCanvas(int *w, int *h) {
   char infobuf[64];
   read(fbinfo, infobuf, sizeof(infobuf) - 1);
-  infobuf[sizeof(infobuf) - 1] = '\0';
   printf("Canvas info: %s\n", infobuf);
 
   if (*w>screen_w || *w==0) { *w = screen_w; }

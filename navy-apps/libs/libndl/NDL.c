@@ -28,7 +28,7 @@ void NDL_OpenCanvas(int *w, int *h) {
   char infobuf[64];
   read(fbinfo, infobuf, sizeof(infobuf) - 1);
   infobuf[sizeof(infobuf) - 1] = '\0';
-  printf(infobuf);
+  printf("Canvas info: %s\n", infobuf);
 
   printf("Canvas info: screen_w = %d, screen_h = %d\n", screen_w, screen_h);
 

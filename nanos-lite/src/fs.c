@@ -70,6 +70,7 @@ size_t fs_read(int fd, void *buf, size_t len) {
     case FD_STDIN: return 0;
     case FD_STDOUT: case FD_STDERR: return 0;
     case FD_EVENT: return file_table[fd].read(buf, 0, len);
+    case FD_PBINFO: return file_table[fd].read(buf, 0, len);
     default: 
       size_t f_size = file_table[fd].size;
       size_t f_open_offset = file_table[fd].open_offset;

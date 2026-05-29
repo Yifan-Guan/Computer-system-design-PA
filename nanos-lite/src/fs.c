@@ -12,12 +12,13 @@ typedef struct {
   WriteFn write;
 } Finfo;
 
-enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_FB};
+enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_FB, FD_EVENT};
 
 size_t ramdisk_read(void *buf, size_t offset, size_t len);
 size_t ramdisk_write(const void *buf, size_t offset, size_t len);
 
 size_t serial_write(const void *buf, size_t offset, size_t len);
+size_t events_read(void *buf, size_t offset, size_t len);
 
 
 size_t invalid_read(void *buf, size_t offset, size_t len) {
@@ -35,6 +36,7 @@ static Finfo file_table[] __attribute__((used)) = {
   [FD_STDIN]  = {"stdin", 0, 0, 0, invalid_read, invalid_write},
   [FD_STDOUT] = {"stdout", 0, 0, 0, invalid_read, serial_write},
   [FD_STDERR] = {"stderr", 0, 0, 0, invalid_read, serial_write},
+  [FD_EVENT]  = {"/dev/events", 0, 0, 0, events_read, invalid_write},
 #include "files.h"
 };
 
@@ -62,6 +64,7 @@ size_t fs_read(int fd, void *buf, size_t len) {
   switch (fd) {
     case FD_STDIN: return 0;
     case FD_STDOUT: case FD_STDERR: return 0;
+    case FD_EVENT: return file_table[fd].read(buf, 0, len);
     default: 
       size_t f_size = file_table[fd].size;
       size_t f_open_offset = file_table[fd].open_offset;

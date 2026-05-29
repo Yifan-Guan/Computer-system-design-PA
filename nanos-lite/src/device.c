@@ -31,6 +31,10 @@ size_t events_read(void *buf, size_t offset, size_t len) {
 size_t dispinfo_read(void *buf, size_t offset, size_t len) {
   AM_GPU_CONFIG_T gpuconfig = io_read(AM_GPU_CONFIG);
 
+  char test_str[64];
+  snprintf(test_str, sizeof(test_str), "WIDTH : %d\nHEIGHT : %d\n", gpuconfig.width, gpuconfig.height);
+  printf("dispinfo_read test: %s", test_str);
+
   size_t ret = snprintf(buf, len, "WIDTH : %d\nHEIGHT : %d\n", gpuconfig.width, gpuconfig.height);
   printf("dispinfo_read: %s", (char *)buf);
   return ret;

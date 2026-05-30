@@ -52,9 +52,7 @@ size_t context_uload(PCB* n_pcb, const char* filename, char *const argv[], char 
 
   for (int i=0; i<STACK_SIZE/PGSIZE; i++) {
     map(&(n_pcb->as), (char*)(new_stack_va+ PGSIZE*i), (char*)(new_stack+ PGSIZE*i), 0b111);
-    printf("stack map va=%08x pa=%08x\n",
-       new_stack_va + i * PGSIZE,
-       new_stack + i * PGSIZE);
+    printf("map stack page %d: va = %p, pa = %p\n", i, (char*)(new_stack_va+ PGSIZE*i), (char*)(new_stack+ PGSIZE*i));
   }
   
 

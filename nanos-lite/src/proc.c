@@ -27,8 +27,7 @@ void init_proc() {
   context_kload(&pcb[0], hello_fun, (void *)1);
   // char *const argv[] = { "--skip" };
   // context_uload(&pcb[1], "/bin/pal", argv, (char *const []){ NULL });
-  // context_uload(&pcb[1], "/bin/exec-test", (char *const []){ NULL }, (char *const []){ NULL   });
-  context_uload(&pcb[1], "/bin/nterm", (char *const []){ NULL }, (char *const []){ NULL   });
+  context_uload(&pcb[1], "/bin/exec-test", (char *const []){ NULL }, (char *const []){ NULL   });
   
   switch_boot_pcb();
 

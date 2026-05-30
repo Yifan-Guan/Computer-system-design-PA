@@ -14,6 +14,9 @@ uintptr_t loader(PCB *pcb, const char *filename) {
   Elf_Ehdr ehdr;
   Elf_Phdr phdr;
   size_t fd = fs_open(filename, 0, 0);
+  char *load_va, *load_pg=0;
+  uintptr_t pa_start;
+
   Log("Loading program '%s' from ramdisk, fd = %d", filename, fd);
 
   fs_read(fd, &ehdr, sizeof(Elf_Ehdr));
@@ -24,11 +27,29 @@ uintptr_t loader(PCB *pcb, const char *filename) {
     fs_read(fd, &phdr, sizeof(Elf_Phdr));
 
     if (phdr.p_type == PT_LOAD) {
-      fs_lseek(fd, phdr.p_offset, SEEK_SET);
-      fs_read(fd, (void *)phdr.p_vaddr, phdr.p_filesz);
+      load_va = (char*) ( phdr.p_vaddr & 0xfffff000);
+      pa_start = 0;
 
-      if (phdr.p_memsz > phdr.p_filesz) {
-        memset((void *)(phdr.p_vaddr + phdr.p_filesz), 0, phdr.p_memsz - phdr.p_filesz);
+      fs_lseek(fd, phdr.p_offset, SEEK_SET);
+
+      if (pcb) {
+        while ((uintptr_t)load_va <= phdr.p_vaddr + phdr.p_memsz) {
+          load_pg = new_page(1);
+          assert(&(pcb->as));
+          map(&(pcb->as), load_va, load_pg, 0b111);
+
+          fs_read(fd, load_pg + (phdr.p_vaddr&0xfff), PGSIZE);
+
+          load_va += PGSIZE;
+          if (!pa_start) pa_start = (uintptr_t)load_pg;
+        }
+
+        memset((char*)(pa_start+(phdr.p_vaddr&0xfff)+phdr.p_filesz), 0, phdr.p_memsz-phdr.p_filesz);
+        pcb->max_brk = (uintptr_t)load_va;
+
+      } else {
+        fs_read(fd, load_va, phdr.p_filesz);
+        memset((char*)(phdr.p_vaddr+phdr.p_filesz), 0, phdr.p_memsz-phdr.p_filesz);
       }
     }
   }

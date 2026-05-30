@@ -78,7 +78,7 @@ size_t context_uload(PCB* n_pcb, const char* filename, char *const argv[], char 
       usp -= strlen(envp[i])+1;
       usp_va -= strlen(envp[i])+1;
       memcpy((char*)usp, envp[i], strlen(envp[i])+1);
-      env_ptr[i] = usp;
+      env_ptr[i] = usp_va;
     }
   }
 
@@ -87,14 +87,14 @@ size_t context_uload(PCB* n_pcb, const char* filename, char *const argv[], char 
       usp -= strlen(argv[i]) + 1;
       usp_va -= strlen(argv[i])+1;
       memcpy((char*)usp, argv[i], strlen(argv[i])+1);
-      arg_ptr[i+1] = usp;
+      arg_ptr[i+1] = usp_va;
     }
   }
 
   usp -= strlen(filename)+1;
   usp_va -= strlen(filename)+1;
   memcpy((char*)usp, filename, strlen(filename)+1);
-  arg_ptr[0] = usp;
+  arg_ptr[0] = usp_va;
 
 
   usp -= sizeof(uintptr_t); 

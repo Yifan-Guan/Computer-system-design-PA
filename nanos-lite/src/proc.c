@@ -1,4 +1,5 @@
 #include <proc.h>
+#include <memory.h>
 
 #define MAX_NR_PROC 4
 
@@ -23,9 +24,10 @@ void hello_fun(void *arg) {
 }
 
 void init_proc() {
-  char *const argv[] = { "--skip" };
-  context_kload(&pcb[0], hello_fun, (void *)1);
-  context_uload(&pcb[1], "/bin/pal", argv, (char *const []){ NULL });
+  // char *const argv[] = { "--skip" };
+  // context_kload(&pcb[0], hello_fun, (void *)1);
+  // context_uload(&pcb[1], "/bin/pal", argv, (char *const []){ NULL });
+  context_uload(&pcb[0], "/bin/exec-test", (char *const []){ NULL }, (char *const []){ NULL });
   
   switch_boot_pcb();
 
@@ -41,7 +43,8 @@ void context_kload(PCB* n_pcb, void (*entry)(void *), void *arg) {
 }
 
 size_t context_uload(PCB* n_pcb, const char* filename, char *const argv[], char *const envp[]) {
-  uintptr_t usp = (uintptr_t)(n_pcb->stack + STACK_SIZE);
+  void *new_stack = new_page(STACK_SIZE / PGSIZE);
+  uintptr_t usp = (uintptr_t)new_stack + STACK_SIZE;
 
   int n_arg = 0, n_env = 0;
 

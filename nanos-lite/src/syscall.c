@@ -7,6 +7,7 @@
 extern char end;
 static uintptr_t program_break = (uintptr_t)&end;
 void naive_uload(PCB *pcb, const char *filename);
+size_t context_uload(PCB* n_pcb, const char* filename, char *const argv[], char *const envp[]);
 
 void do_syscall(Context *c) {
 
@@ -42,10 +43,13 @@ void do_syscall(Context *c) {
         c->GPRx = 0;
       }
       break;
+
     case SYS_execve:
-      Log("SYS_execve: filename = %s, argv = %p, envp = %p", (char *)a[1], (void *)a[2], (void *)a[3]);
-      naive_uload(NULL, (const char *)a[1]);
+      context_uload(NULL, (const char *)a[1], (char *const *)a[2], (char *const *)a[3]);
+      switch_boot_pcb();
+      yield();
       break;
+
     case SYS_gettimeofday: 
       uint32_t tick = io_read(AM_TIMER_UPTIME).us;
       ((struct timeval *)a[1])->tv_sec = tick / 1000000;

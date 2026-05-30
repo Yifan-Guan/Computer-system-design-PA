@@ -27,7 +27,7 @@ void init_proc() {
   // char *const argv[] = { "--skip" };
   // context_kload(&pcb[0], hello_fun, (void *)1);
   // context_uload(&pcb[1], "/bin/pal", argv, (char *const []){ NULL });
-  context_uload(&pcb[0], "/bin/exec-test", (char *const []){ NULL }, (char *const []){ NULL });
+  context_uload(&pcb[0], "/bin/exec-test", (char *const []){ NULL }, (char *const []){ NULL   });
   
   switch_boot_pcb();
 
@@ -101,7 +101,7 @@ size_t context_uload(PCB* n_pcb, const char* filename, char *const argv[], char 
 
   uintptr_t entry = loader(n_pcb, filename);
 
-  n_pcb->cp = ucontext(&(n_pcb->as), (Area) { (void*)&(n_pcb->stack[0]), (void*)(n_pcb - 1) }, (void*)entry, usp);
+  n_pcb->cp = ucontext(&(n_pcb->as), (Area) { (void*)&(n_pcb->stack[0]), (void*)((uintptr_t)&(n_pcb->stack[0]) + STACK_SIZE) }, (void*)entry, usp);
 
   usp -= sizeof(uintptr_t);
   *((uintptr_t*)usp) = n_arg;

@@ -43,8 +43,17 @@ void context_kload(PCB* n_pcb, void (*entry)(void *), void *arg) {
 }
 
 size_t context_uload(PCB* n_pcb, const char* filename, char *const argv[], char *const envp[]) {
+  protect(&(n_pcb->as));
   void *new_stack = new_page(STACK_SIZE / PGSIZE);
   uintptr_t usp = (uintptr_t)new_stack + STACK_SIZE;
+
+  uintptr_t new_stack_va = (uintptr_t)(n_pcb -> as.area.end) - STACK_SIZE;
+  uintptr_t usp_va = (uintptr_t)(new_stack_va + STACK_SIZE);
+
+  for (int i=0; i<STACK_SIZE/PGSIZE; i++) {
+    map(&(n_pcb->as), (char*)(new_stack_va+ PGSIZE*i), (char*)(new_stack+ PGSIZE*i), 0b111);
+  }
+  
 
   int n_arg = 0, n_env = 0;
 
@@ -62,10 +71,12 @@ size_t context_uload(PCB* n_pcb, const char* filename, char *const argv[], char 
 
   usp -= sizeof(uintptr_t); 
   *((uintptr_t*)usp) = 0;
+  usp_va -= sizeof(uintptr_t);
 
   if (envp != NULL) {
     for (int i=n_env-1; i>=0; i--) {
       usp -= strlen(envp[i])+1;
+      usp_va -= strlen(envp[i])+1;
       memcpy((char*)usp, envp[i], strlen(envp[i])+1);
       env_ptr[i] = usp;
     }
@@ -74,28 +85,35 @@ size_t context_uload(PCB* n_pcb, const char* filename, char *const argv[], char 
   if (argv != NULL) {
     for (int i = n_arg-2; i>=0; i--) {
       usp -= strlen(argv[i]) + 1;
+      usp_va -= strlen(argv[i])+1;
       memcpy((char*)usp, argv[i], strlen(argv[i])+1);
       arg_ptr[i+1] = usp;
     }
   }
 
   usp -= strlen(filename)+1;
+  usp_va -= strlen(filename)+1;
   memcpy((char*)usp, filename, strlen(filename)+1);
   arg_ptr[0] = usp;
 
 
   usp -= sizeof(uintptr_t); 
+  usp_va -= sizeof(uintptr_t);
   *((uintptr_t*)usp) = 0;
+
   if (n_env >= 0) {
     usp -= sizeof(env_ptr);
+    usp_va -= sizeof(env_ptr);
     memcpy((char*)usp, env_ptr, sizeof(env_ptr));
   }
 
   usp -= sizeof(uintptr_t); 
+  usp_va -= sizeof(uintptr_t);
   *((uintptr_t*)usp) = 0;
 
   if (n_arg >= 0) {
     usp -= sizeof(arg_ptr);
+    usp_va -= sizeof(arg_ptr);
     memcpy((char*)usp, arg_ptr, sizeof(arg_ptr));
   }
 
@@ -104,8 +122,9 @@ size_t context_uload(PCB* n_pcb, const char* filename, char *const argv[], char 
   n_pcb->cp = ucontext(&(n_pcb->as), (Area) { (void*)&(n_pcb->stack[0]), (void*)((uintptr_t)&(n_pcb->stack[0]) + STACK_SIZE) }, (void*)entry, usp);
 
   usp -= sizeof(uintptr_t);
+  usp_va -= sizeof(uintptr_t);
   *((uintptr_t*)usp) = n_arg;
-  (n_pcb->cp)->GPRx = usp;
+  (n_pcb->cp)->GPRx = usp_va;
 
   return 0;
 }

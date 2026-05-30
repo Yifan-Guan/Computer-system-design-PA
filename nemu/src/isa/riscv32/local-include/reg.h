@@ -29,6 +29,7 @@ static inline int check_reg_idx(int idx) {
 #define SR_MEPC    0x341
 #define SR_MSTATUS 0x300
 #define SR_MCAUSE  0x342
+#define SR_SATP    0x180
 
 static inline int check_csr_idx(int idx) {
   switch (idx) {
@@ -36,6 +37,7 @@ static inline int check_csr_idx(int idx) {
     case SR_MEPC: return 1;
     case SR_MSTATUS: return 2;
     case SR_MCAUSE: return 3;
+    case SR_SATP: return 4;
     default: assert(0); return -1;
   }
 }

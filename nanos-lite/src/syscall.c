@@ -2,12 +2,15 @@
 #include <fs.h>
 #include <time.h>
 #include <proc.h>
+#include <memory.h>
 #include "syscall.h"
 
 extern char end;
-static uintptr_t program_break = (uintptr_t)&end;
+// static uintptr_t program_break = (uintptr_t)&end;
 void naive_uload(PCB *pcb, const char *filename);
 size_t context_uload(PCB* n_pcb, const char* filename, char *const argv[], char *const envp[]);
+
+int mm_brk(uintptr_t brk);
 
 void do_syscall(Context *c) {
 
@@ -32,16 +35,9 @@ void do_syscall(Context *c) {
     case SYS_close: c->GPRx = fs_close(a[1]); break;
     case SYS_lseek: c->GPRx = fs_lseek(a[1], a[2], a[3]); break;
     case SYS_brk:
-      if (a[1] == 0) {
-        c->GPRx = program_break;
-      } else {
-        uintptr_t new_break = a[1];
-        if (new_break > program_break) {
-          memset((void *)program_break, 0, new_break - program_break);
-        }
-        program_break = new_break;
-        c->GPRx = 0;
-      }
+      uint32_t ret = mm_brk((uintptr_t)a[1] + (int32_t)a[2]);
+
+      c->GPRx = ret;
       break;
 
     case SYS_execve:

@@ -24,7 +24,7 @@ const char *regs[] = {
 };
 
 const char *csr_regs[] = {
-  "mtvec", "mepc", "mstatus", "mcause"
+  "mtvec", "mepc", "mstatus", "mcause", "satp"
 };
 
 static int reg_num = 32;

@@ -13,6 +13,7 @@ static Area segments[] = {      // Kernel memory mappings
 };
 
 #define USER_SPACE RANGE(0x40000000, 0x80000000)
+#define PTESIZE sizeof(uintptr_t)
 
 static inline void set_satp(void *pdir) {
   uintptr_t mode = 1ul << (__riscv_xlen - 1);
@@ -68,6 +69,32 @@ void __am_switch(Context *c) {
 }
 
 void map(AddrSpace *as, void *va, void *pa, int prot) {
+  uintptr_t pdir = (uintptr_t)(as->ptr) >> 12;
+
+  uintptr_t vpn1, vpn0;
+  uintptr_t ppn1, ppn0;
+  uintptr_t pte;
+  uintptr_t pte1_addr, pte0_addr;
+  uintptr_t v=1, r=1<<1, w=1<<2, x=1<<3;
+
+  vpn1 = (uintptr_t) va & 0xffc00000;
+  vpn0 = (uintptr_t) va & 0x003ff000;
+  ppn1 = (uintptr_t) pa & 0xffc00000;
+  ppn0 = (uintptr_t) pa & 0x003ff000;
+
+  pte1_addr = pdir * PGSIZE + (vpn1>>22) * PTESIZE;
+
+  if (*(uintptr_t*)pte1_addr == 0) {
+    pte0_addr = (uintptr_t) pgalloc_usr(PGSIZE);
+    *(uintptr_t*)pte1_addr = ((pte0_addr & 0xfffff000) >>2) | v;
+
+  } else {
+    uintptr_t pte_ppn = ((*(uintptr_t*)pte1_addr) & 0xfffffc00) >> 10;
+    pte0_addr = pte_ppn * PGSIZE + (vpn0>>12) * PTESIZE; 
+  }
+
+  pte = (ppn1>>2) | (ppn0>>2) | x | w | r | v;
+  *(uintptr_t*)pte0_addr = pte;
 }
 
 Context *ucontext(AddrSpace *as, Area kstack, void *entry, uintptr_t sp) {
@@ -76,6 +103,7 @@ Context *ucontext(AddrSpace *as, Area kstack, void *entry, uintptr_t sp) {
   cp -> gpr[2] = sp;
   cp -> mepc = (uintptr_t)entry;
   cp -> mstatus = 0x80;
+  cp -> pdir = as -> ptr;
 
   return cp;
 }

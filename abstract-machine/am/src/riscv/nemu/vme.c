@@ -98,7 +98,7 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
   pte = (ppn1>>2) | (ppn0>>2) | x | w | r | v;
   *(uintptr_t*)pte0_addr = pte;
 
-  printf("pte1[%d]=%x\n", vpn1>>22, *(uint32_t*)pte1_addr);
+  printf("pte1[%d]=%d\n", vpn1>>22, *(uint32_t*)pte1_addr);
 
 }
 

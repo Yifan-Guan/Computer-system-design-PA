@@ -45,11 +45,11 @@ size_t context_uload(PCB* n_pcb, const char* filename, char *const argv[], char 
 
   int n_arg = 0, n_env = 0;
 
-  if (envp) {
+  if (envp != NULL) {
     for (; envp[n_env] != NULL; n_env++);
   }
 
-  if (argv) {
+  if (argv != NULL) {
     for (; argv[n_arg] != NULL; n_arg++); 
   }
 
@@ -60,7 +60,7 @@ size_t context_uload(PCB* n_pcb, const char* filename, char *const argv[], char 
   usp -= sizeof(uintptr_t); 
   *((uintptr_t*)usp) = 0;
 
-  if (envp) {
+  if (envp != NULL) {
     for (int i=n_env-1; i>=0; i--) {
       usp -= strlen(envp[i])+1;
       memcpy((char*)usp, envp[i], strlen(envp[i])+1);
@@ -68,7 +68,7 @@ size_t context_uload(PCB* n_pcb, const char* filename, char *const argv[], char 
     }
   }
 
-  if (argv) {
+  if (argv != NULL) {
     for (int i = n_arg-2; i>=0; i--) {
       usp -= strlen(argv[i]) + 1;
       memcpy((char*)usp, argv[i], strlen(argv[i])+1);

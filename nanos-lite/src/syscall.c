@@ -46,8 +46,8 @@ void do_syscall(Context *c) {
 
     case SYS_execve:
       context_uload(current, (const char *)a[1], (char *const *)a[2], (char *const *)a[3]);
-      // switch_boot_pcb();
-      // yield();
+      switch_boot_pcb();
+      yield();
       break;
 
     case SYS_gettimeofday: 

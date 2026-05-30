@@ -35,17 +35,31 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   paddr_t satp_ppn = csr(SR_SATP) & 0x003fffff;
   paddr_t pte_addr = satp_ppn * 4096 + (vpn1>>22) * 4;
 
+
+
   word_t pte = host_read(guest_to_host(pte_addr), 4);
-  if(!(pte&1)) {
+
+  printf(
+  "vaddr=%08x vpn1=%d vpn0=%d pte1=%08x\n",
+  vaddr,
+  vpn1>>22,
+  vpn0>>12,
+  pte
+);
+
+
     panic("invalid PTE: vaddr=0x%x, pte_addr=0x%x, pte=0x%x\n", vaddr, pte_addr, pte);
-  } 
 
   if ((pte&0x2)==0 && (pte&0x4)==0 && (pte&0x8)==0) {
     
     paddr_t pte0_addr = ((pte & 0xfffffc00)>>10) * 4096 + (vpn0>>12) * 4;
     pte = host_read(guest_to_host(pte0_addr), 4);
 
-    if(!(pte&1)) {
+  if(!(pte&1)) {
+    printf(
+  "pte0_addr=%08x\n",
+  pte0_addr
+);
       panic("invalid pte: vaddr=0x%x, pte_addr=0x%x, pte=0x%x\n", vaddr, pte_addr, pte);
     } 
 

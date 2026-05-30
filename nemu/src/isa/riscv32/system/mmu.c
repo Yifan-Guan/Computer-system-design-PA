@@ -36,6 +36,9 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int len, int type) {
   paddr_t pte_addr = satp_ppn * 4096 + (vpn1>>22) * 4;
 
   word_t pte = host_read(guest_to_host(pte_addr), 4);
+  if(!(pte&1)) {
+    panic("invalid PTE: vaddr=0x%x, pte_addr=0x%x, pte=0x%x\n", vaddr, pte_addr, pte);
+  } 
 
   if ((pte&0x2)==0 && (pte&0x4)==0 && (pte&0x8)==0) {
     

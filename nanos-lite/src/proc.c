@@ -23,8 +23,9 @@ void hello_fun(void *arg) {
 }
 
 void init_proc() {
+  char *const argv[] = { "--skip" };
   context_kload(&pcb[0], hello_fun, (void *)1);
-  context_uload(&pcb[1], "/bin/pal", NULL, NULL);
+  context_uload(&pcb[1], "/bin/pal", argv, NULL);
   
   switch_boot_pcb();
 
@@ -40,8 +41,64 @@ void context_kload(PCB* n_pcb, void (*entry)(void *), void *arg) {
 }
 
 size_t context_uload(PCB* n_pcb, const char* filename, char *const argv[], char *const envp[]) {
+  uintptr_t usp = (uintptr_t)(n_pcb->stack + STACK_SIZE);
+
+  int n_arg = 0, n_env = 0;
+  for (; argv[n_arg] != NULL; n_arg++); 
+  for (; envp[n_env] != NULL; n_env++);
+  n_arg++;
+  uintptr_t arg_ptr[n_arg], env_ptr[n_env];
+
+
+  usp -= sizeof(uintptr_t); 
+  *((uintptr_t*)usp) = 0;
+
+  if (*envp) {
+    for (int i=n_env-1; i>=0; i--) {
+      usp -= strlen(envp[i])+1;
+      memcpy((char*)usp, envp[i], strlen(envp[i])+1);
+      env_ptr[i] = usp;
+    }
+  }
+
+  if (*argv) {
+    for (int i = n_arg-2; i>=0; i--) {
+      usp -= strlen(argv[i]) + 1;
+      memcpy((char*)usp, argv[i], strlen(argv[i])+1);
+      arg_ptr[i+1] = usp;
+    }
+  }
+
+  usp -= strlen(filename)+1;
+  memcpy((char*)usp, filename, strlen(filename)+1);
+  arg_ptr[0] = usp;
+
+
+  usp -= sizeof(uintptr_t); 
+  *((uintptr_t*)usp) = 0;
+  if (n_env >= 0) {
+    usp -= sizeof(env_ptr);
+    memcpy((char*)usp, env_ptr, sizeof(env_ptr));
+  }
+
+  usp -= sizeof(uintptr_t); 
+  *((uintptr_t*)usp) = 0;
+
+  if (n_arg >= 0) {
+    usp -= sizeof(arg_ptr);
+    memcpy((char*)usp, arg_ptr, sizeof(arg_ptr));
+  }
+
+
+
   uintptr_t entry = loader(n_pcb, filename);
-  n_pcb->cp = ucontext(&n_pcb->as, (Area) { n_pcb->stack, n_pcb + 1 }, (void*)entry);
+
+  n_pcb->cp = ucontext(&(n_pcb->as), (Area) { (void*)&(n_pcb->stack[0]), (void*)(n_pcb + 1) }, (void*)entry, usp);
+
+  usp -= sizeof(uintptr_t);
+  *((uintptr_t*)usp) = n_arg;
+  (n_pcb->cp)->GPRx = usp;
+
   return 0;
 }
 

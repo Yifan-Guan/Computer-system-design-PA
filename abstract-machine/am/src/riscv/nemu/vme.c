@@ -70,13 +70,12 @@ void __am_switch(Context *c) {
 void map(AddrSpace *as, void *va, void *pa, int prot) {
 }
 
-Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
+Context *ucontext(AddrSpace *as, Area kstack, void *entry, uintptr_t sp) {
   Context *cp = (Context*)((uintptr_t)(kstack.end) - sizeof(Context));
 
+  cp -> gpr[2] = sp;
   cp -> mepc = (uintptr_t)entry;
   cp -> mstatus = 0x80;
-
-  cp -> pdir = as -> ptr;
 
   return cp;
 }
